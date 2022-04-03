@@ -44,15 +44,37 @@ mem_used()
 
 # viz prep ---------------------------------------------------
 
-pltname <- 'hello' %ps% 'world'
+plt_states <- c('KY', 'TN', 'MS', 'VA', 'AL', 
+                'GA', 'SC', 'NC', 'WV')
 
-dfplt <- dfa
+pltname <- 'NOAA Tornado Data; ' %ps% 
+  reduce(plt_states, .f = paste, sep = '; ') %ps% '; ' %ps% 
+  '2007-2020; '
+(pltname)
+
+dfplt <- dfa %>% 
+  filter(st %in% plt_states) %>% 
+  filter(valid_fmag == TRUE) %>% 
+  filter(torn_dttime >= as.Date('2007-01-01'), 
+         torn_dttime <= as.Date('2020-12-31'))
+
+dfsf_plt_state <- df_state %>% 
+  filter(NAME %in% c('Kentucky', 
+                     'Tennessee', 
+                     'Mississippi', 
+                     'Virginia', 
+                     'Alabama', 
+                     'Georgia', 
+                     'South Carolina', 
+                     'North Carolina', 
+                     'West Virginia')) %>% 
+  filter(GEOID > 0)
 
 # ^ -----
 
 # run plots and visuals ------------------------------------
 
-
+fun_map_torn1()
 
 
 # ^ -----

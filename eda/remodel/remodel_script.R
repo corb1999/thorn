@@ -11,7 +11,9 @@ library(tidyverse)
 library(tidylog)
 library(lubridate)
 library(scales)
-library(gt)
+# library(gt)
+library(sf)
+library(tidycensus)
 set.seed(metadatar$seed_set[1])
 options(digits = 4, max.print = 99, warnPartialMatchDollar = TRUE, 
         tibble.print_max = 30, scipen = 999, nwarnings = 5, 
@@ -92,3 +94,40 @@ ls()
 trash()
 mem_used()
 
+# census key and other setup ------------------------------------------
+
+options(tigris_use_cache = TRUE)
+
+# set api key if needed !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# census_api_key("111", install = TRUE)
+
+# set up the parameters for what to query from the acs5 !!!!!!!!!!!!!!!!!!
+census_params <- list(state = unique(dfa$st),  
+                      year = 2019, 
+                      variables = data.frame(var_codes = c("B01003_001"), 
+                                             var_detail = c("population estimate")))
+
+
+# ^ -----
+
+# query the census api to get data with geometries attached --------------
+
+# pull data at a state level
+df_state <- get_acs(state = census_params$state, 
+                    geography = "state", 
+                    year = census_params$year, 
+                    variables = census_params$variables$var_codes, 
+                    geometry = TRUE, 
+                    cache_table = TRUE)
+df_state
+
+# clean up the dataframes ::::::::::::::::::::::::::::::::::::::::::::
+
+df_state <- df_state %>% 
+  rename(var_codes = variable) 
+df_state <- left_join(df_state, census_params$variables, 
+                      by = 'var_codes')
+
+# test ??????????????????????????
+# ggplot(data = df_state) + 
+#   geom_sf()

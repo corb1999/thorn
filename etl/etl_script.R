@@ -111,8 +111,8 @@ dim(raw_df)
 # clean the dataset -------------------------------------------
 
 raw_df <- raw_df %>% clean_names() %>% as_tibble()
-asdf <- data_dictionary(raw_df)
-asdf %>% View
+# asdf <- data_dictionary(raw_df)
+# asdf %>% View
 
 # cleaning
 clockin()
@@ -127,7 +127,9 @@ dfa <- raw_df %>%
          torn_dttime = ymd_hms(paste(date, time)), 
          torn_yrmon = floor_date(torn_dttime, unit = 'month'), 
          valid_fmag = ifelse(mag == -9, FALSE, TRUE), 
-         post07 = ifelse(yr >= 2007, TRUE, FALSE))
+         post07 = ifelse(yr >= 2007, TRUE, FALSE), 
+         elat = ifelse(elat == 0, slat, elat), 
+         elon = ifelse(elon == 0, slon, elon))
 clockout()
 
 # cleanup !!!!!!!!!!!!!!!!!!!
